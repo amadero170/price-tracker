@@ -137,8 +137,8 @@ function PriceTable({ results }: { results: PriceResult[] }) {
   }
 
   return (
-    <div className="rounded-lg border border-border/50 overflow-hidden">
-      <Table>
+    <div className="rounded-lg border border-border/50">
+      <Table className="min-w-[800px]">
         <TableHeader>
           <TableRow className="border-border/50 hover:bg-transparent">
             <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[60px]">
@@ -256,7 +256,7 @@ export function SiteAccordion({
   return (
     <div className="space-y-3">
       {/* Active sites */}
-      <Accordion multiple defaultValue={activeSites.map((g) => g.site.id)}>
+      <Accordion multiple>
         {activeSites.map((group) => {
           const filtered = filterResults(group.results, searchQuery);
           return (
