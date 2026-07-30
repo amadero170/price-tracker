@@ -1,65 +1,169 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { SearchFilter } from "@/components/dashboard/search-filter";
+import { SiteAccordion } from "@/components/dashboard/site-accordion";
+import type { PricesApiResponse } from "@/types";
+import { Activity, RefreshCw } from "lucide-react";
+
+export default function Dashboard() {
+  const [data, setData] = useState<PricesApiResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchPrices = async (isRefresh = false) => {
+    try {
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
+
+      const res = await fetch("/api/prices");
+      if (!res.ok) throw new Error("Error al obtener precios");
+      const json = (await res.json()) as PricesApiResponse;
+      setData(json);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error desconocido al cargar datos"
+      );
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrices();
+  }, []);
+
+  // Overall average from the first active site
+  const activeSite = data?.sites.find((s) => s.site.active);
+  const avgDiff = activeSite?.averageDifference ?? null;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border/40 bg-card/30 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/20">
+                <Activity className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">
+                  Fester Price Tracker
+                </h1>
+                <p className="text-xs text-muted-foreground -mt-0.5">
+                  Monitoreo de precios en tiempo real
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => fetchPrices(true)}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/50 bg-card/50 text-sm text-muted-foreground hover:text-foreground hover:border-border transition-all disabled:opacity-50"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <RefreshCw
+                className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`}
+              />
+              {refreshing ? "Actualizando..." : "Actualizar"}
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </header>
+
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {loading ? (
+          <LoadingSkeleton />
+        ) : error ? (
+          <ErrorState message={error} onRetry={() => fetchPrices()} />
+        ) : data ? (
+          <>
+            {/* Stats */}
+            <StatsCards
+              totalProducts={data.totalProducts}
+              totalAlerts={data.totalAlerts}
+              averageDifference={avgDiff}
+              lastUpdated={data.lastUpdated}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+            {/* Search */}
+            <SearchFilter
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+
+            {/* Sites */}
+            <SiteAccordion
+              siteGroups={data.sites}
+              searchQuery={searchQuery}
+            />
+          </>
+        ) : null}
       </main>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Stats skeleton */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-24 rounded-xl bg-card/30 border border-border/30"
+          />
+        ))}
+      </div>
+      {/* Search skeleton */}
+      <div className="h-11 rounded-lg bg-card/30 border border-border/30" />
+      {/* Accordion skeleton */}
+      <div className="space-y-3">
+        <div className="h-16 rounded-lg bg-card/30 border border-border/30" />
+        <div className="h-64 rounded-lg bg-card/30 border border-border/30" />
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-14 rounded-lg bg-muted/5 border border-border/20 opacity-50"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ErrorState({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 space-y-4">
+      <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+        <Activity className="h-8 w-8 text-red-400" />
+      </div>
+      <div className="text-center">
+        <h2 className="text-lg font-semibold text-foreground">
+          Error al cargar datos
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">{message}</p>
+      </div>
+      <button
+        onClick={onRetry}
+        className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+      >
+        Reintentar
+      </button>
     </div>
   );
 }
