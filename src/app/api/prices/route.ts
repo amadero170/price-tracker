@@ -11,8 +11,8 @@ import type {
 import fs from "fs";
 import path from "path";
 
-// Revalidate every 5 minutes
-export const revalidate = 300;
+// Force dynamic rendering (no caching on Vercel)
+export const dynamic = "force-dynamic";
 
 function formatPrice(price: number): string {
   return new Intl.NumberFormat("es-MX", {
@@ -33,7 +33,7 @@ async function fetchImperXProducts(): Promise<ShopifyProductsResponse | null> {
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           Accept: "application/json",
         },
-        next: { revalidate: 300 },
+        cache: "no-store",
       }
     );
 
