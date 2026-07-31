@@ -8,6 +8,12 @@ export const sites: Site[] = [
     active: true,
   },
   {
+    id: "casa-myers",
+    name: "Casa Myers",
+    url: "https://casamyers.com.mx",
+    active: true,
+  },
+  {
     id: "home-depot",
     name: "Home Depot",
     url: "https://homedepot.com.mx",

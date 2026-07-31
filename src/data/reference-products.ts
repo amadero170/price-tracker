@@ -12,6 +12,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Unidad 35 Kg",
       handle: "fester-cr-66",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/fester-impermeabilizante-gris-cementoso-con-fibra-cr-66ff-saco-de-35-kilos-2-partes-2803768",
   },
   {
     idh: "2092474",
@@ -24,6 +25,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Blanco",
       handle: "fester-a-5-anos-19l",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-a5-anos-fibratado-blanco-19l-2555161",
   },
   {
     idh: "2970387",
@@ -36,6 +38,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Blanco / Cubeta 19 L",
       handle: "acriton-proshield-12-anos",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-acriton-12-anos-19l-bco-1752123",
   },
   {
     idh: "1628795",
@@ -48,6 +51,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Cubeta 19L",
       handle: "fester-vaportite-550",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/fester-vaportite-550-de-19-lt-1628795",
   },
   {
     idh: "2092470",
@@ -60,6 +64,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Rojo",
       handle: "fester-a-5-anos-19l",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-a5-anos-rojo-cubeta-de-19-litros-1901788",
   },
   {
     idh: "2970386",
@@ -72,6 +77,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Rojo / Cubeta 19 L",
       handle: "acriton-proshield-12-anos",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-acriton-12-anos-19l-rojo-1752124",
   },
   {
     idh: "2970392",
@@ -84,6 +90,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Blanco",
       handle: "acriton-proshield-6-anos",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-acriton-6-anos-19l-bco-2970392-2346395",
   },
   {
     idh: "2622500",
@@ -96,6 +103,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Cubeta 19L",
       handle: "fester-cl-52",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/fester-cl-52-impermeabilizante-para-instalaciones-abajo-de-ceramica-uso-en-terrazas-19-lts",
   },
   {
     idh: "2092472",
@@ -108,6 +116,7 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Blanco",
       handle: "fester-a-3-anos-19l",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-a3-anos-blanco-cubeta-de-19-litros-1901781",
   },
   {
     idh: "2970389",
@@ -120,5 +129,6 @@ export const referenceProducts: ReferenceProduct[] = [
       variantTitle: "Rojo",
       handle: "acriton-proshield-8-anos",
     },
+    casaMyersUrl: "https://www.casamyers.com.mx/impermeabilizante-acriton-8-anos-19l-rojo-2970389-2346012",
   },
 ];

@@ -11,6 +11,8 @@ export interface ReferenceProduct {
     variantTitle: string;
     handle: string;
   } | null;
+  // Casa Myers product URL
+  casaMyersUrl?: string | null;
 }
 
 // A monitored site

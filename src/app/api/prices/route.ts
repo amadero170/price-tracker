@@ -70,16 +70,100 @@ function buildImperXPrices(
   return variantMap;
 }
 
+interface CasaMyersResult {
+  price: number | null;
+  inStock: boolean;
+}
+
+async function fetchCasaMyersProduct(url: string): Promise<CasaMyersResult> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) return { price: null, inStock: false };
+
+    const html = await res.text();
+    let price: number | null = null;
+    let inStock = true;
+
+    // 1. Try JSON-LD
+    const jsonLdMatches = html.match(
+      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi
+    );
+    if (jsonLdMatches) {
+      for (const block of jsonLdMatches) {
+        const text = block.replace(/<\/?script[^>]*>/gi, "").trim();
+        try {
+          const data = JSON.parse(text);
+          if (data["@type"] === "Product" && data.offers) {
+            const offer = Array.isArray(data.offers)
+              ? data.offers[0]
+              : data.offers;
+            if (offer && offer.price) {
+              price = parseFloat(offer.price);
+              if (
+                offer.availability &&
+                typeof offer.availability === "string" &&
+                offer.availability.includes("OutOfStock")
+              ) {
+                inStock = false;
+              }
+              break;
+            }
+          }
+        } catch {
+          // ignore error
+        }
+      }
+    }
+
+    // 2. Meta tag fallback
+    if (price === null) {
+      const priceMeta =
+        html.match(/itemprop="price"\s+content="([^"]+)"/i) ||
+        html.match(/property="product:price:amount"\s+content="([^"]+)"/i) ||
+        html.match(/data-price-amount="([^"]+)"/i);
+      if (priceMeta) price = parseFloat(priceMeta[1]);
+    }
+
+    return { price, inStock };
+  } catch {
+    return { price: null, inStock: false };
+  }
+}
+
 export async function GET() {
-  const shopifyData = await fetchImperXProducts();
-  const variantMap = buildImperXPrices(shopifyData);
   const now = new Date().toISOString();
+
+  // Run Imper-X and Casa Myers fetches in parallel
+  const [shopifyData, casaMyersResultsList] = await Promise.all([
+    fetchImperXProducts(),
+    Promise.all(
+      referenceProducts.map(async (product) => {
+        if (!product.casaMyersUrl)
+          return { idh: product.idh, price: null, inStock: false };
+        const res = await fetchCasaMyersProduct(product.casaMyersUrl);
+        return { idh: product.idh, ...res, url: product.casaMyersUrl };
+      })
+    ),
+  ]);
+
+  const variantMap = buildImperXPrices(shopifyData);
+  const casaMyersMap = new Map(
+    casaMyersResultsList.map((r) => [r.idh, r])
+  );
 
   const siteGroups: SitePriceGroup[] = [];
 
   for (const site of sites) {
     if (site.id === "imper-x") {
-      // Active site: match reference products to imper-x variants
       const results: PriceResult[] = [];
       let alertCount = 0;
       let matchedCount = 0;
@@ -88,7 +172,6 @@ export async function GET() {
 
       for (const product of referenceProducts) {
         if (!product.imperX) {
-          // Product not available on this site
           results.push({
             idh: product.idh,
             productName: product.name,
@@ -147,6 +230,69 @@ export async function GET() {
             belowReference: false,
             inStock: false,
             productUrl: null,
+            lastUpdated: now,
+          });
+        }
+      }
+
+      siteGroups.push({
+        site,
+        results,
+        alertCount,
+        matchedCount,
+        totalProducts: referenceProducts.length,
+        averageDifference:
+          diffCount > 0 ? Math.round((totalDiff / diffCount) * 10) / 10 : null,
+      });
+    } else if (site.id === "casa-myers") {
+      const results: PriceResult[] = [];
+      let alertCount = 0;
+      let matchedCount = 0;
+      let totalDiff = 0;
+      let diffCount = 0;
+
+      for (const product of referenceProducts) {
+        const cmData = casaMyersMap.get(product.idh);
+
+        if (cmData && cmData.price !== null) {
+          const sitePrice = cmData.price;
+          const diff =
+            ((sitePrice - product.referencePrice) / product.referencePrice) *
+            100;
+          const below = sitePrice < product.referencePrice;
+
+          if (below) alertCount++;
+          matchedCount++;
+          totalDiff += diff;
+          diffCount++;
+
+          results.push({
+            idh: product.idh,
+            productName: product.name,
+            referencePrice: product.referencePrice,
+            category: product.category,
+            sitePrice,
+            sitePriceFormatted: formatPrice(sitePrice),
+            referencePriceFormatted: formatPrice(product.referencePrice),
+            priceDifference: Math.round(diff * 10) / 10,
+            belowReference: below,
+            inStock: cmData.inStock,
+            productUrl: cmData.url || null,
+            lastUpdated: now,
+          });
+        } else {
+          results.push({
+            idh: product.idh,
+            productName: product.name,
+            referencePrice: product.referencePrice,
+            category: product.category,
+            sitePrice: null,
+            sitePriceFormatted: "No encontrado",
+            referencePriceFormatted: formatPrice(product.referencePrice),
+            priceDifference: null,
+            belowReference: false,
+            inStock: false,
+            productUrl: product.casaMyersUrl || null,
             lastUpdated: now,
           });
         }
