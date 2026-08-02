@@ -4,7 +4,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2803768",
     name: "Fester CR-66 Fibre Force Gris 35 Kg",
-    referencePrice: 2393.91,
+    referencePrice: 2985.91,
     category: "Cementosos",
     imperX: {
       productId: 6629262688444,
@@ -17,7 +17,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2092474",
     name: "Fester A5 White 19L",
-    referencePrice: 1544.62,
+    referencePrice: 1793.55,
     category: "Acrílicos",
     imperX: {
       productId: 6615213015228,
@@ -30,7 +30,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2970387",
     name: "Fester Acriton PS Max 12A Blanco 19L",
-    referencePrice: 3089.63,
+    referencePrice: 3459.43,
     category: "Acrílicos Premium",
     imperX: {
       productId: 6610413289660,
@@ -43,7 +43,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "1628795",
     name: "Fester Vaportite 550 19L",
-    referencePrice: 2934.0,
+    referencePrice: 3743.78,
     category: "Asfálticos",
     imperX: {
       productId: 6621022453948,
@@ -56,7 +56,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2092470",
     name: "Fester A5 Red 19L",
-    referencePrice: 1544.62,
+    referencePrice: 1793.55,
     category: "Acrílicos",
     imperX: {
       productId: 6615213015228,
@@ -69,7 +69,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2970386",
     name: "Fester Acriton PS Max 12A Rojo 19L",
-    referencePrice: 3042.96,
+    referencePrice: 3407.18,
     category: "Acrílicos Premium",
     imperX: {
       productId: 6610413289660,
@@ -82,7 +82,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2970392",
     name: "Fester Acriton PS Max 6A Blanco 19L",
-    referencePrice: 2451.85,
+    referencePrice: 2745.31,
     category: "Acrílicos Premium",
     imperX: {
       productId: 6610341462204,
@@ -95,7 +95,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2622500",
     name: "Fester CL-52 19L",
-    referencePrice: 3463.7,
+    referencePrice: 3878.27,
     category: "Membranas",
     imperX: {
       productId: 6615237722300,
@@ -108,7 +108,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2092472",
     name: "Fester A3 White 19L",
-    referencePrice: 1343.08,
+    referencePrice: 1559.53,
     category: "Acrílicos",
     imperX: {
       productId: 6612254752956,
@@ -121,7 +121,7 @@ export const referenceProducts: ReferenceProduct[] = [
   {
     idh: "2970389",
     name: "Fester Acriton PS Max 8A Rojo 19L",
-    referencePrice: 2812.59,
+    referencePrice: 3149.24,
     category: "Acrílicos Premium",
     imperX: {
       productId: 6610394087612,
